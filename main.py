@@ -10,22 +10,8 @@ from pygame import (QUIT,event, display,
 
 from bullets import red_bullet_group, blue_bullet_group
 from squares import AbstractSquare ,_RedSquare, _BlueSquare, GroupsHandler, red_square_group, blue_square_group
-from assets import height, width, window, white, red, blue
+from assets import height, width, window, white, red, blue, verify_colisions
 
-
-def create_square_to_group(square_object: AbstractSquare, coordinates: list[int, int], group_name: str):
-    square = square_object()
-    square.rect.x = coordinates[0]
-    square.rect.y = coordinates[1]
-    GroupsHandler.register_sprite_to_group(square, group_name)
-
-
-def verify_colisions(sprite_group_a: pygame.sprite.Group, sprite_group_b:pygame.sprite.Group):
-    colision_dict: dict[pygame.sprite.Sprite] = pygame.sprite.groupcollide( sprite_group_a, sprite_group_b, False, False)
-    if len(colision_dict) != 0:
-        print(f'Colisões detectadas {sprite_group_a} >>> {sprite_group_b}')
-        for sprite in colision_dict:
-            sprite.kill()
 
 
 GroupsHandler.register_group([red_square_group, blue_square_group], ['vermelho', 'azul'])
@@ -33,8 +19,8 @@ GroupsHandler.register_group([red_bullet_group, blue_bullet_group], ['red bullet
 
 
 for n in range(0, 7):
-    create_square_to_group(_RedSquare, [randint(0, int(width//2)), randint(0, int(height//2))], 'vermelho')
-    create_square_to_group(_BlueSquare, [randint(0, int(width)), randint(0, int(height))], 'azul')
+    GroupsHandler.create_square_to_group(_RedSquare, [randint(0, int(width//2)), randint(0, int(height//2))], 'vermelho')
+    GroupsHandler.create_square_to_group(_BlueSquare, [randint(0, int(width)), randint(0, int(height))], 'azul')
 
 GroupsHandler.add_sprites_to_their_groups()
 GroupsHandler.see_groups()

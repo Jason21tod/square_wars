@@ -4,7 +4,7 @@ from bullets import *
 from typing import Iterable
 
 
-
+SQUARES_SPEED = 30
 class AbstractSquare(pygame.sprite.Sprite):
     """Classe base dos quadrados do jogo, possui todos os métodos comuns de um quadrado
 
@@ -21,7 +21,7 @@ class AbstractSquare(pygame.sprite.Sprite):
 
         self.rect.x = 0
         self.rect.y = 0
-        self.speed: int = 30
+        self.speed: int = SQUARES_SPEED
 
         self.my_bullet = None
         self.bullet_group: pygame.sprite.Group = pygame.sprite.Group
@@ -54,13 +54,16 @@ class AbstractSquare(pygame.sprite.Sprite):
             square (Square): alvo a ser atingido
         """
         if self.frame_set%30 == 0:
-            circle: Bullet = self.my_bullet(self, [square.rect.x,square.rect.y], )
-            self.bullet_group.add(circle)
+            bullet: Bullet = self.my_bullet(self, [square.rect.x,square.rect.y], )
+            self.bullet_group.add(bullet)
             self.bullet_group.draw(window)
             print(f'disparando...')
 
     @classmethod
     def update_frame_set(cls):
+        """Método que faz o update dos sets de frames de maneira global , ou seja: Todas as classes terão
+        o mesmo frameset, oque significa que elas estarão no 'mesmo tempo'.
+        """
         if cls.frame_set%400 == 0:
             cls.frame_set = 0
         cls.frame_set += 1
@@ -103,6 +106,36 @@ class _RedSquare(AbstractSquare):
         self.enemies_groups.append(blue_square_group)
         self.team: str = 'vermelho'
 
+    def update(self):
+        self.make_clones()
+        return super().update()
+
+    def make_clones(self):
+        if self.frame_set % 100 ==0:
+            red_square_clone = _RedSquareClone()
+            red_square_clone.image.fill(pygame.color.Color(0,0,0))
+            red_square_clone.rect.x = self.rect.x
+            red_square_clone.rect.y = self.rect.y
+            self.groups()[0].add(red_square_clone)
+
+
+class _RedSquareClone(_RedSquare):
+    clone_count = 0
+    def __init__(self) -> None:
+        super().__init__()
+        self.speed = int(SQUARES_SPEED + SQUARES_SPEED*0.5)
+
+    def make_clones(self):
+        pass
+
+    def update(self):
+        self.update_frame_set()
+        print('Contador do clone: ', self.clone_count)
+        if self.clone_count ==70:
+            self.kill()
+            self.clone_count = 0
+        self.clone_count += 1
+        return super().update()
 
 red_square_group = pygame.sprite.Group()
 blue_square_group = pygame.sprite.Group()
@@ -177,6 +210,28 @@ class GroupsHandler:
             sprite_group: pygame.sprite.Group = group[1][0]
             print(sprite_group, 'DRAWED')
             sprite_group.draw(surface)
+
+    @classmethod
+    def create_square_to_group(cls, square_object: AbstractSquare, coordinates: list[int, int], group_name: str):
+        """Cria um quadrado com as informações de coordenadas pré-definidas
+
+        Args:
+            square_object (AbstractSquare): Objeto do tipo square. 
+                - NOTA: O objeto precisa ser um objeto do tipo, não deve ser passada uma instância:
+                EXEMPLO:\n\n
+                
+                    create_square_to_group(_BlueSquare, [randint(0, int(width)), randint(0, int(height))], 'azul')
+                
+
+                O objeto passado acima não é uma instância e sim a própria classe
+
+            coordinates (list[int, int]): lista com os dois inteiros onde ele deve ser renderizado
+            group_name (str): nome do grupo onde ele será adicionado
+        """
+        square = square_object()
+        square.rect.x = coordinates[0]
+        square.rect.y = coordinates[1]
+        cls.register_sprite_to_group(square, group_name)
 
 
 if __name__ == '__main__':

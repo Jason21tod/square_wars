@@ -1,4 +1,3 @@
-from pygame.sprite import AbstractGroup
 from assets import *
 from pygame import sprite, Surface, color, SRCALPHA
 import pygame
@@ -36,7 +35,8 @@ class Bullet(sprite.Sprite):
         print('coeficientes: ', self.coefficient_x, self.coefficient_y)
 
     def verify_do_kill_distance(self):
-        """Utiliza regra pitagoras para calcular a distancia do projetil até a posição do alvo
+        """Utiliza regra pitagoras para calcular a distancia do projetil até a posição do alvo,
+        em caso da bala atingir a distancia, ela é deletada
         """
         distance = (self.coefficient_x ** 2 + self.coefficient_y ** 2) ** 0.5
         if distance == 0.0:

@@ -3,7 +3,26 @@ import pygame
 from random import randint
 from configs import *
 
+
+def verify_colisions(sprite_group_a: pygame.sprite.Group, sprite_group_b:pygame.sprite.Group):
+    """Verifica a colisão dos grupos e mata o grupo concorrente em caso de colisão:
+
+    Args:
+        sprite_group_a (pygame.sprite.Group): Grupo que colide. Este grupo deleta o grupo B
+        sprite_group_b (pygame.sprite.Group): Grupo a ser colidido. Este grupo é deletado pelo grupo A.
+    """
+    colision_dict: dict[pygame.sprite.Sprite] = pygame.sprite.groupcollide( sprite_group_a, sprite_group_b, False, False)
+    if len(colision_dict) != 0:
+        print(f'Colisões detectadas {sprite_group_a} >>> {sprite_group_b}')
+        for sprite in colision_dict:
+            sprite.kill()
+
 def verify_sprite_errors(sprite):
+    """Verifica se a Sprite está de acordo com os padrões do sistema: Ela precisa possuir os atributos rect e speed
+
+    Args:
+        sprite (pygame.sprite.Sprite): Objeto sprite em questão
+    """
     try:
         sprite.speed
         sprite.rect
