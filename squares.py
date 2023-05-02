@@ -91,6 +91,24 @@ class _BlueSquare(AbstractSquare):
         self.enemies_groups.append(red_square_group)
         self.team: str = 'azul'
 
+    def update(self):
+        self.teleport()
+        return super().update()
+    
+    def verify_enemy_bullet(self):
+        for bullet in red_bullet_group:
+            distance = calculate_distance(bullet, self)
+            if distance <= MIN_DISTANCE:
+                return True
+            else:
+                return False
+
+    def teleport(self):
+        if self.verify_enemy_bullet:
+            if self.frame_set % 20 ==0:
+                self.rect.x = randint(0, width)
+                self.rect.y = randint(0, height)
+
 
 class _RedSquare(AbstractSquare):
     def __init__(self) -> None:
